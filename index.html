@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NOOLAM · Kanchipuram Silk</title>
+  <meta name="description" content="NOOLAM — handwoven Kanchipuram silk sarees, bordered in real zari.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <a class="logo" href="#home" aria-label="NOOLAM home">
+      <svg viewBox="0 0 40 22" aria-hidden="true"><path d="M20 2C16 8 16 14 20 20C24 14 24 8 20 2Z M20 20C14 18 9 13 7 8C12 9 17 13 20 20Z M20 20C26 18 31 13 33 8C28 9 23 13 20 20Z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+      <span class="logo-word">NOOLAM</span>
+      <span class="logo-sub">KANCHIPURAM SILK</span>
+    </a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#home" class="active">Home</a>
+      <a href="#look">Try the Look</a>
+      <a href="#silk">Pick a Silk</a>
+      <a href="#rack">The Rack</a>
+      <a href="#muse">The Muse</a>
+      <a href="#bridal">Bridal</a>
+      <a href="#weave">The Weave</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn" id="wishBtn" aria-label="Wishlist"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span class="badge" id="wishCount" hidden>0</span></button>
+      <button class="icon-btn" id="bagBtn" aria-label="Bag"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="badge" id="bagCount" hidden>0</span></button>
+      <a class="btn btn-maroon btn-sm" href="#weave">Visit the Store <span class="btn-dot"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="home">
+      <div class="hero-art" id="heroArt"></div>
+      <div class="hero-shade"></div>
+      <div class="hero-copy">
+        <span class="chip-dark"><i></i>KANCHIPURAM · PURE ZARI · HANDWOVEN SILK</span>
+        <h1>Woven for the Divine.</h1>
+        <p>NOOLAM brings the temple looms of Kanchipuram home: Kanjivaram silk in heritage colours, bordered in real zari and finished by hand.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-maroon btn-lg" href="#look">Try the Look <span class="btn-dot"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span></a>
+          <a class="btn btn-white btn-lg" href="#rack">Browse the Rack <span class="btn-dot"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SIX MOODS ============ -->
+    <section class="section moods" id="archive">
+      <div class="sec-head split">
+        <div>
+          <p class="eyebrow">The NOOLAM Archive</p>
+          <h2>Six Moods. <span class="grad">Timeless Drapes</span></h2>
+        </div>
+        <p class="sec-note">Woven by hand, worn for a lifetime. Six silk stories, from quiet mornings to festive evenings.</p>
+      </div>
+      <div class="arches" id="arches"></div>
+    </section>
+
+    <!-- ============ TRY THE LOOK ============ -->
+    <section class="section look" id="look">
+      <div class="look-stage">
+        <p class="eyebrow">Styled head to toe</p>
+        <h2>Try the <span class="maroon">Look.</span></h2>
+        <p class="lede">Eight looks, styled head to toe. Tap a look to see the pieces.</p>
+        <div class="look-track" id="lookTrack" aria-roledescription="carousel"></div>
+        <div class="look-foot">
+          <button class="arrow-plain" id="lookPrev" aria-label="Previous look"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+          <div class="look-progress"><div class="look-bar"><i id="lookBar"></i></div><span id="lookCounter">7 of 8 · Ivory Elephant</span></div>
+          <span class="hint"><i></i>Scroll or drag</span>
+          <button class="arrow-plain" id="lookNext" aria-label="Next look"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+      <aside class="look-panel" aria-live="polite">
+        <p class="panel-title">In this look</p>
+        <ul class="pieces" id="pieces"></ul>
+        <div class="bundle">
+          <div><p>Complete the look</p><small id="bundleNote">Bundle all 6 pieces · save 10%</small></div>
+          <div class="bundle-price"><s id="bundleWas"></s><strong id="bundleNow"></strong></div>
+        </div>
+        <div class="bundle-ctas">
+          <button class="btn btn-maroon btn-lg grow" id="addLook">Add full look to bag <span class="btn-dot"><svg viewBox="0 0 24 24"><path d="M4 5h2l2 11h10l2-8H7"/><circle cx="9" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/></svg></span></button>
+          <button class="heart-btn lg" id="wishLook" aria-label="Save look"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ============ PICK A SILK ============ -->
+    <section class="section silk" id="silk">
+      <div class="sec-head split">
+        <h2>Pick a <span class="maroon">Silk</span></h2>
+        <p class="sec-note">Tilt a card, press it, poke the silk. Hit <span class="plus-ink">+</span> to drop a saree into your bag.</p>
+      </div>
+      <div class="silk-track" id="silkTrack"></div>
+    </section>
+
+    <!-- ============ THE RACK ============ -->
+    <section class="section rack" id="rack">
+      <div class="sec-head center">
+        <p class="eyebrow">The Collection</p>
+        <h2>Every silk, <span class="grad-rev">on the rail.</span></h2>
+      </div>
+      <div class="filters" id="filters" role="tablist"></div>
+      <div class="rail-wrap" id="railWrap">
+        <div class="rail" id="rail"><div class="rod"><i></i><i></i></div></div>
+        <p class="rail-caption" id="railCaption">&nbsp;</p>
+        <div class="rack-detail" id="rackDetail" hidden>
+          <button class="close-btn" id="detailClose">Close <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          <button class="arrow-ring left" id="detailPrev" aria-label="Previous piece"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+          <div class="detail-body">
+            <div class="detail-art" id="detailArt"></div>
+            <h3 id="detailName"></h3>
+            <p class="detail-price" id="detailPrice"></p>
+            <div class="toggle" id="detailSide"><button class="on" data-side="front">Front</button><button data-side="back">Back</button></div>
+            <div class="sizes" id="detailSizes"></div>
+            <div class="detail-ctas"><button class="btn-select" id="detailAdd" disabled>Select a size</button><button class="heart-btn" id="detailWish" aria-label="Save to wishlist"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button></div>
+            <a href="#weave" class="avail">See availability</a>
+          </div>
+          <button class="arrow-ring right" id="detailNext" aria-label="Next piece"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+      <div class="rack-meta"><span id="rackCount">Explore the collection · 9 pieces</span><span>Illustrated studio imagery · demo collection</span></div>
+    </section>
+
+    <!-- ============ MUSE FILM ============ -->
+    <section class="section film" id="muse">
+      <div class="film-col left"><div class="film-strip" id="stripL"></div></div>
+      <div class="film-center">
+        <p class="eyebrow gold center">The Muse Film</p>
+        <h2 class="center">Feel the <span class="grad">drape</span></h2>
+        <div class="film-frame">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="film-screen">
+            <canvas id="filmCanvas"></canvas>
+            <div class="film-title"><span>NOOLAM</span><em>a film in silk</em></div>
+            <button class="sound-pill" id="soundBtn" aria-pressed="false"><span class="eq"><i></i><i></i><i></i></span><b>Sound off</b></button>
+          </div>
+        </div>
+        <a class="btn btn-maroon btn-lg glow" href="#rack">Purchase the Collection <span class="btn-dot"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span></a>
+      </div>
+      <div class="film-col right"><div class="film-strip down" id="stripR"></div></div>
+    </section>
+
+    <!-- ============ MUSE REELS ============ -->
+    <section class="section reels" id="reels">
+      <div class="sec-head split">
+        <div>
+          <p class="eyebrow">The Muse Reels</p>
+          <h2>Silk, <span class="grad-rev">in motion.</span></h2>
+        </div>
+        <div class="reel-side">
+          <p class="sec-note">Five drapes filmed the way they are lived in — lamp rooms, temple lanes, a morning by the sea. Tap the centre reel to watch it full screen, with sound.</p>
+          <div class="reel-ctrls">
+            <button class="round" id="reelPrev" aria-label="Previous reel"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+            <button class="round dark" id="reelPause" aria-label="Pause reels"><svg viewBox="0 0 24 24" id="pauseIco"><path d="M9 6v12M15 6v12"/></svg></button>
+            <button class="round" id="reelNext" aria-label="Next reel"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="reel-stage"><div class="reel-track" id="reelTrack"></div></div>
+    </section>
+
+    <!-- ============ BRIDAL ============ -->
+    <section class="section bridal" id="bridal">
+      <div class="sec-head center">
+        <p class="eyebrow">For the muhurtham and every vow after</p>
+        <h2>The Bridal <span class="maroon">Collection</span></h2>
+      </div>
+      <div class="bridal-track" id="bridalTrack"></div>
+      <div class="bridal-info">
+        <h3 id="brName"></h3>
+        <p id="brMeta"></p>
+        <strong id="brPrice"></strong>
+        <div class="bridal-ctas">
+          <button class="arrow-ring" id="brPrev" aria-label="Previous saree"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+          <button class="btn btn-maroon btn-lg" id="brAdd">Add to cart</button>
+          <button class="heart-btn" id="brWish" aria-label="Save to wishlist"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+          <button class="arrow-ring" id="brNext" aria-label="Next saree"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ THE WEAVE (footer) ============ -->
+    <footer class="weave" id="weave">
+      <div class="weave-inner">
+        <div>
+          <p class="logo-word big">NOOLAM</p>
+          <p class="weave-line">Handwoven in Kanchipuram, one saree at a time. Every border is woven, never printed — silk warp, silver-core zari, and three shuttles thrown by hand.</p>
+        </div>
+        <div><h4>Visit</h4><p>12 Gandhi Road<br>Kanchipuram 631501<br>Open daily, 10 – 8</p></div>
+        <div><h4>The Weave</h4><p>Korvai borders<br>Pure zari promise<br>Care for your silk</p></div>
+        <div><h4>Help</h4><p>Bridal appointments<br>Shipping & returns<br>Contact us</p></div>
+      </div>
+      <p class="fine">© NOOLAM — a demo brand. Illustrations are generated in code; no real products are sold here.</p>
+    </footer>
+  </main>
+
+  <!-- ticker -->
+  <div class="ticker" aria-hidden="true"><div class="ticker-run" id="ticker"></div></div>
+
+  <!-- reel fullscreen -->
+  <div class="reel-full" id="reelFull" hidden>
+    <div class="reel-full-art" id="reelFullArt"></div>
+    <div class="reel-full-copy"><span id="rfFabric"></span><h3 id="rfTitle"></h3><p id="rfPlace"></p><div class="rf-bar"><i id="rfBar"></i></div></div>
+    <button class="close-btn light" id="rfClose">Close <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="js/art.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
