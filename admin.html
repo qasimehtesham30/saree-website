@@ -25,6 +25,14 @@
     In the project folder run <code>node admin-server.js</code>, then open <code>http://localhost:5180/admin.html</code>.
   </div>
 
+  <form class="login" id="login" hidden>
+    <h2>Admin sign-in</h2>
+    <p>Enter the admin password you set in Vercel.</p>
+    <input type="password" id="pw" autocomplete="current-password" aria-label="Password" required>
+    <p class="login-err" id="loginErr" hidden>Wrong password, try again.</p>
+    <button class="primary" type="submit">Sign in</button>
+  </form>
+
   <nav class="groups" id="groupNav" aria-label="Sections"></nav>
   <main id="groups"></main>
 

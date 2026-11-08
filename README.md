@@ -33,3 +33,20 @@ Then open http://localhost:5180/admin.html (needs Node 18+; nothing to install).
 
 Models and hanger shots look best as cut-outs on a transparent PNG/WebP. The brand film and reels accept MP4 or WebM video.
 Uploads are listed in `content/media.json`; any slot missing there falls back to the drawing, so the site works on GitHub Pages as is.
+
+## Admin on Vercel (live site)
+
+The same `/admin.html` also works on your Vercel deployment. There, every upload is committed straight to this
+GitHub repo, and Vercel redeploys automatically, so changes are live about a minute later.
+
+One-time setup in Vercel → your project → **Settings → Environment Variables**, then redeploy:
+
+| Name | Value |
+| --- | --- |
+| `ADMIN_PASSWORD` | a password you choose for the admin page |
+| `GITHUB_TOKEN` | a GitHub fine-grained token with **Contents: Read and write** on this repo only |
+| `GITHUB_REPO` | `qasimehtesham30/saree-website` |
+| `GITHUB_BRANCH` | optional, defaults to `main` |
+
+Vercel limits uploads to about 4 MB per file. Photos are shrunk in the browser so they fit, but long videos may not:
+compress them or upload them with the local admin. After editing on Vercel, run `git pull` before using the local admin.

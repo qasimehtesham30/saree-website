@@ -26,6 +26,13 @@ code { font-family: ui-monospace, Menlo, monospace; font-size: .92em; background
 .primary { background: linear-gradient(180deg, #f0cd83, #d6a650); color: #3a1a08; }
 .primary:disabled { opacity: .45; cursor: not-allowed; }
 
+.login { max-width: 380px; margin: 80px auto; padding: 32px; background: #fff; border: 1px solid var(--line); border-radius: 14px; display: grid; gap: 12px; box-shadow: 0 20px 40px -24px rgba(60, 20, 10, .35); }
+.login h2 { font-size: 22px; }
+.login p { color: var(--muted); font-size: 14px; }
+.login input { height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; font: inherit; }
+.login input:focus { outline: 2px solid var(--gold); border-color: transparent; }
+.login .primary { justify-content: center; height: 44px; }
+.login .login-err { color: var(--maroon); }
 .offline { margin: 20px 32px 0; padding: 16px 20px; border-radius: 10px; background: #fff4e0; border: 1px solid #f0d49c; line-height: 1.6; }
 
 .groups { position: sticky; top: 68px; z-index: 10; display: flex; gap: 8px; overflow-x: auto; padding: 14px 32px; background: rgba(250, 247, 242, .94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }

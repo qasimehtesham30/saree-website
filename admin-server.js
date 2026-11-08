@@ -73,7 +73,7 @@ async function api(req, res, urlPath) {
   if (req.method === 'GET' && urlPath === '/api/status') {
     const st = await git('status', '--porcelain', '--', 'media', 'content');
     const branch = await git('rev-parse', '--abbrev-ref', 'HEAD');
-    return send(res, 200, { changes: st.ok ? st.out.split('\n').filter(Boolean).length : 0, branch: branch.out });
+    return send(res, 200, { mode: 'local', changes: st.ok ? st.out.split('\n').filter(Boolean).length : 0, branch: branch.out });
   }
 
   if (req.method === 'PUT' && urlPath.startsWith('/api/media/')) {

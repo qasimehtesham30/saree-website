@@ -41,16 +41,48 @@
   GROUPS.forEach(g => (g.subs ? g.subs.flatMap(s => s.slots) : g.slots).forEach(s => { SLOTS[s.key] = { ...s, group: g }; }));
 
   // ---------- server ----------
-  let manifest = {}, online = true;
-  try {
-    const r = await fetch('api/media', { headers: H, cache: 'no-store' });
-    if (!r.ok) throw new Error();
-    manifest = await r.json();
-  } catch {
+  // "local": node admin-server.js on this computer, publish with one button.
+  // "hosted": the Vercel functions in api/, password protected, every change committed to GitHub at once.
+  let manifest = {}, online = true, server = { mode: 'local' };
+  const localPreview = {};
+  const saved = { get() { try { return sessionStorage.getItem('noolam-admin-pw') || ''; } catch { return ''; } }, set(v) { try { sessionStorage.setItem('noolam-admin-pw', v); } catch {} } };
+  if (saved.get()) H['X-Admin-Password'] = saved.get();
+
+  async function connect() {
+    const r = await fetch('api/status', { headers: H, cache: 'no-store' }).catch(() => null);
+    if (r && r.status === 401) return 'login';
+    const j = r ? await r.json().catch(() => null) : null;
+    if (!r || !r.ok || !j) return j && j.error ? j.error : 'offline';
+    server = { mode: 'local', ...j };
+    const m = await fetch('api/media', { headers: H, cache: 'no-store' });
+    if (!m.ok) return (await m.json().catch(() => ({}))).error || 'offline';
+    manifest = await m.json();
+    return 'ok';
+  }
+  function askPassword(wrong) {
+    const form = $('#login');
+    form.hidden = false; $('#loginErr').hidden = !wrong;
+    $('#status').textContent = 'Sign in to edit';
+    $('#pw').value = ''; $('#pw').focus();
+    return new Promise(resolve => {
+      form.onsubmit = e => { e.preventDefault(); form.hidden = true; resolve($('#pw').value); };
+    });
+  }
+  let state = await connect(), tries = 0;
+  while (state === 'login') {
+    const pw = await askPassword(tries++ > 0 || !!H['X-Admin-Password']);
+    H['X-Admin-Password'] = pw;
+    saved.set(pw);
+    state = await connect();
+  }
+  if (state !== 'ok') {
     online = false;
     $('#offline').hidden = false;
-    $('#status').textContent = 'Read-only: admin server not running';
+    if (state !== 'offline') $('#offline').textContent = state;
+    $('#status').textContent = 'Read-only: admin server not reachable';
   }
+  const hosted = server.mode === 'hosted';
+  if (hosted) $('#publish').hidden = true;
 
   let toastTimer;
   function toast(msg, err) {
@@ -60,6 +92,10 @@
   }
   async function refreshStatus() {
     if (!online) return;
+    if (hosted) {
+      $('#status').innerHTML = `Saves straight to GitHub (<b>${esc(server.branch)}</b>) · live about a minute after each change`;
+      return;
+    }
     const r = await fetch('api/status', { headers: H, cache: 'no-store' }).then(x => x.json()).catch(() => null);
     if (!r) return;
     $('#status').innerHTML = r.changes
@@ -72,8 +108,10 @@
   const previewHTML = s => {
     const url = manifest[s.key];
     if (!url) return `${s.art()}<span class="tag">Drawing</span>`;
-    const src = esc(url) + '?v=' + encodeURIComponent(url);
-    return (isVideo(url) ? `<video src="${src}" muted loop playsinline autoplay></video>` : `<img src="${src}" alt="">`) + '<span class="tag photo">Photo</span>';
+    // Fresh hosted uploads aren't deployed yet: show the uploaded file, or GitHub's raw copy.
+    const src = localPreview[s.key] || esc(url) + '?v=' + encodeURIComponent(url);
+    const fallback = hosted && server.rawBase ? ` onerror="this.onerror=null;this.src='${esc(server.rawBase + url)}'"` : '';
+    return (isVideo(url) ? `<video src="${src}" muted loop playsinline autoplay></video>` : `<img src="${src}" alt=""${fallback}>`) + '<span class="tag photo">Photo</span>';
   };
   const acceptOf = s => ({ video: 'video/mp4,video/webm,video/quicktime', both: 'image/*,video/mp4,video/webm,video/quicktime' }[s.accept || s.group.accept] || 'image/*');
   const card = s => {
@@ -134,12 +172,14 @@
     el.insertAdjacentHTML('beforeend', '<div class="busy">Uploading…</div>');
     try {
       const body = await prepare(file, s.group.max || 1800);
+      if (server.maxBytes && body.size > server.maxBytes) throw new Error('Files over 4 MB can’t be uploaded on the live site. Compress it, or use the local admin.');
       const r = await fetch('api/media/' + key, { method: 'PUT', headers: { ...H, 'Content-Type': body.type || file.type }, body });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error || 'Upload failed');
       manifest[key] = j.url;
+      localPreview[key] = URL.createObjectURL(body);
       rerender(key);
-      toast(`Replaced “${s.label}”. Publish to put it on GitHub.`);
+      toast(hosted ? `Saved “${s.label}” to GitHub. Live in about a minute.` : `Replaced “${s.label}”. Publish to put it on GitHub.`);
     } catch (e) {
       el.querySelector('.busy')?.remove();
       toast(e.message, true);
@@ -148,8 +188,9 @@
   }
   async function reset(key) {
     const r = await fetch('api/media/' + key, { method: 'DELETE', headers: H });
-    if (!r.ok) return toast('Could not reset this image', true);
+    if (!r.ok) return toast((await r.json().catch(() => ({}))).error || 'Could not reset this image', true);
     delete manifest[key];
+    delete localPreview[key];
     rerender(key);
     toast(`“${SLOTS[key].label}” is back to the drawing.`);
     refreshStatus();
