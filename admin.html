@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>NOOLAM Admin · Site images</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <header class="bar">
+    <div class="brand"><span class="word">NOOLAM</span><span class="sub">Admin · Site images</span></div>
+    <p class="status" id="status">Checking…</p>
+    <div class="bar-actions">
+      <a class="ghost" href="./" target="_blank" rel="noopener">View site ↗</a>
+      <button class="primary" id="publish" disabled>Publish to GitHub</button>
+    </div>
+  </header>
+
+  <div class="offline" id="offline" hidden>
+    <strong>The admin runs on your computer.</strong>
+    In the project folder run <code>node admin-server.js</code>, then open <code>http://localhost:5180/admin.html</code>.
+  </div>
+
+  <nav class="groups" id="groupNav" aria-label="Sections"></nav>
+  <main id="groups"></main>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="js/art.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

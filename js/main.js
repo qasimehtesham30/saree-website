@@ -1,4 +1,12 @@
-(() => {
+(async () => {
+  // Real photos/videos uploaded through admin.html; any slot left empty falls back to the drawn art.
+  const MEDIA = await fetch('content/media.json', { cache: 'no-store' }).then(r => (r.ok ? r.json() : {})).catch(() => ({}));
+  const M = k => MEDIA[k] || null;
+  const isVideo = u => /\.(mp4|webm|mov)$/i.test(u);
+  const media = (url, fit, alt = '') => (isVideo(url)
+    ? `<video class="media ${fit}" src="${url}" muted loop playsinline preload="metadata"></video>`
+    : `<img class="media ${fit}" src="${url}" alt="${alt}" loading="lazy" draggable="false">`);
+  const pic = (k, fit, alt) => (M(k) ? media(M(k), fit, alt) : '');
   const $ = s => document.querySelector(s);
   const inr = n => '₹' + n.toLocaleString('en-IN');
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -95,7 +103,7 @@
   }
 
   // ---------- nav + ticker + reveal ----------
-  $('#heroArt').innerHTML = Art.showroom();
+  $('#heroArt').innerHTML = pic('hero', 'cover') || Art.showroom();
   const tick = DATA.ticker.map(([k, v]) => `<span><b>${k}</b>${v}<em>◆</em></span>`).join('');
   $('#ticker').innerHTML = tick + tick;
 
@@ -118,7 +126,7 @@
     const sc = Art.scene(200, 310, { decor: m.decor, bg: m.bg, fig: m.fig, seed: i + 3, figH: 340, figBottom: 1.07 }).replace('<svg ', '<svg x="0" y="30" width="200" height="310" ');
     return `<a class="arch" href="#look"><div class="arch-frame"><svg viewBox="0 0 200 340">
       <defs><clipPath id="${cid}"><path d="${ARCH}"/></clipPath></defs>
-      <g clip-path="url(#${cid})"><g class="scene-img">${sc}</g></g>
+      <g clip-path="url(#${cid})"><g class="scene-img">${M(`mood-${i}`) ? `<image href="${M(`mood-${i}`)}" x="0" y="30" width="200" height="310" preserveAspectRatio="xMidYMid slice"/>` : sc}</g></g>
       <path d="${ARCH}" fill="none" stroke="#c9973f" stroke-width="3"/>
       <path d="${ARCH}" fill="none" stroke="#f3d48a" stroke-width="1" transform="translate(100 190) scale(.93) translate(-100 -190)" opacity=".85"/>
       <g fill="#c9973f"><rect x="99" y="2" width="2" height="9"/><ellipse cx="100" cy="17" rx="5.5" ry="6"/><rect x="93" y="22" width="14" height="3" rx="1"/><rect x="96" y="25" width="8" height="6"/></g>
@@ -127,7 +135,7 @@
 
   // ---------- try the look ----------
   const lookTrack = $('#lookTrack');
-  lookTrack.innerHTML = DATA.looks.map(l => `<div class="look-card" role="button" aria-label="${l.name}">${Art.figure(l.fig)}</div>`).join('');
+  lookTrack.innerHTML = DATA.looks.map((l, i) => `<div class="look-card" role="button" aria-label="${l.name}">${pic(`look-${i}`, 'cutout', l.name) || Art.figure(l.fig)}</div>`).join('');
   const added = new Set();
   function renderLook(i) {
     const L = DATA.looks[i];
@@ -136,7 +144,7 @@
     $('#pieces').innerHTML = L.pieces.map(([type, name, price, color], k) => {
       const key = `${L.name}:${k}`;
       return `<li class="piece">
-        <div class="piece-thumb"><b>${k + 1}</b>${Art.icon(type, { color, pattern: L.fig.pattern, border: L.fig.border })}</div>
+        <div class="piece-thumb"><b>${k + 1}</b>${pic(`piece-${i}-${k}`, 'cover', name) || Art.icon(type, { color, pattern: L.fig.pattern, border: L.fig.border })}</div>
         <div><small>NOOLAM · ${type}</small><h4>${name}</h4><p class="price">${inr(price)}</p></div>
         <button class="tiny-heart ${state.wish.has(key) ? 'on' : ''}" data-key="${key}" data-name="${name}" aria-label="Save ${name}">${HEART}</button>
         <button class="tiny-plus ${added.has(key) ? 'added' : ''}" data-key="${key}" data-name="${name}" data-color="${color}" aria-label="Add ${name} to bag">${PLUS}</button></li>`;
@@ -173,7 +181,7 @@
   const silkTrack = $('#silkTrack');
   silkTrack.innerHTML = DATA.silks.map((s, i) => `<div class="silk-card"><div class="silk-inner" style="background:linear-gradient(160deg, ${Art.shade(s.bg, 0.08)}, ${Art.shade(s.bg, -0.12)})">
       <div class="silk-title" style="color:${s.ink}">${s.name}</div>
-      <div class="silk-fig">${Art.figure(s.fig)}</div>
+      <div class="silk-fig">${pic(`silk-${i}`, 'cutout', s.name) || Art.figure(s.fig)}</div>
       <div class="silk-shine"></div>
       <span class="silk-price" style="color:${s.ink}">${inr(s.price)}</span>
       <button class="silk-heart" data-i="${i}" aria-label="Save ${s.name}">${HEART}</button>
@@ -211,7 +219,11 @@
 
   // ---------- the rack ----------
   const rail = $('#rail'), railWrap = $('#railWrap');
-  const garment = (p, back) => (['saree', 'half'].includes(p.cat) ? Art.sareeOnHanger({ ...p.art, back }) : Art.blouseOnHanger({ ...p.art, sleeve: p.cat === 'full' ? 'full' : 'half', back }));
+  const garment = (p, back) => {
+    const i = DATA.rack.indexOf(p), m = (back && M(`rack-${i}-back`)) || M(`rack-${i}`);
+    if (m) return media(m, 'cutout', p.name);
+    return ['saree', 'half'].includes(p.cat) ? Art.sareeOnHanger({ ...p.art, back }) : Art.blouseOnHanger({ ...p.art, sleeve: p.cat === 'full' ? 'full' : 'half', back });
+  };
   DATA.rack.forEach((p, i) => {
     const h = document.createElement('div');
     h.className = 'hanger'; h.dataset.i = i; h.innerHTML = garment(p, false);
@@ -302,7 +314,7 @@
   // ---------- muse film: flowing silk on canvas + tanpura drone ----------
   const tiles = (list, offset) => list.map((f, i) => {
     const h = i % 2 ? 330 : 270;
-    return `<div class="film-tile" style="height:${h}px">${Art.scene(250, h, { ...f, seed: i + offset, figH: h * 1.15, figBottom: 1.12 })}</div>`;
+    return `<div class="film-tile" style="height:${h}px">${pic(`film-${offset - 1 + i}`, 'cover') || Art.scene(250, h, { ...f, seed: i + offset, figH: h * 1.15, figBottom: 1.12 })}</div>`;
   }).join('');
   const left = DATA.film.slice(0, 4), right = DATA.film.slice(4);
   $('#stripL').innerHTML = tiles(left, 1) + tiles(left, 1);
@@ -348,14 +360,29 @@
   })();
 
   const soundBtn = $('#soundBtn');
+  const filmVideo = () => $('#filmVideo');
+  let filmSound = false;
   function setSound(on) {
-    on ? Drone.start() : Drone.stop();
+    filmSound = on;
+    const v = filmVideo();
+    if (v) v.muted = !on; else on ? Drone.start() : Drone.stop();
     soundBtn.setAttribute('aria-pressed', on); soundBtn.querySelector('b').textContent = on ? 'Sound on' : 'Sound off';
   }
-  soundBtn.onclick = () => setSound(!Drone.on);
+  soundBtn.onclick = () => setSound(!filmSound);
 
   (function silkFilm() {
-    const cv = $('#filmCanvas'), ctx = cv.getContext('2d');
+    const cv = $('#filmCanvas');
+    if (M('film-video')) {
+      $('.film-title').hidden = true;
+      cv.outerHTML = `<video id="filmVideo" class="media cover" src="${M('film-video')}" autoplay muted loop playsinline></video>`;
+      new IntersectionObserver(([e]) => {
+        const v = filmVideo();
+        if (e.isIntersecting) v.play().catch(() => {});
+        else { v.pause(); if (filmSound) setSound(false); }
+      }).observe($('.film-screen'));
+      return;
+    }
+    const ctx = cv.getContext('2d');
     let W = 0, H = 0, visibleNow = false, t0 = performance.now();
     const layers = [
       { y: 0.26, amp: 0.07, k: 2.2, s: 0.35, col: [168, 24, 44], zari: [214, 164, 76] },
@@ -395,7 +422,7 @@
     new IntersectionObserver(([e]) => {
       const was = visibleNow; visibleNow = e.isIntersecting;
       if (visibleNow && !was) { size(); requestAnimationFrame(draw); }
-      if (!visibleNow && Drone.on && $('#reelFull').hidden) setSound(false);
+      if (!visibleNow && filmSound && $('#reelFull').hidden) setSound(false);
     }).observe(cv);
     addEventListener('resize', size);
   })();
@@ -406,7 +433,7 @@
   const reelData = i => DATA.reels[i % DATA.reels.length];
   reelTrack.innerHTML = Array.from({ length: REEL_N }, (_, i) => {
     const r = reelData(i);
-    return `<div class="reel"><div class="reel-art">${Art.scene(240, 420, { decor: r.decor, bg: r.bg, fig: r.fig, seed: i, figH: 400, figBottom: 1.02 })}</div>
+    return `<div class="reel"><div class="reel-art">${pic(`reel-${i % DATA.reels.length}`, 'cover', r.title) || Art.scene(240, 420, { decor: r.decor, bg: r.bg, fig: r.fig, seed: i, figH: 400, figBottom: 1.02 })}</div>
       <div class="reel-top"><span class="no">REEL ${r.no}</span><span>0:${String(r.dur).padStart(2, '0')}</span></div>
       <button class="reel-play" aria-label="Play ${r.title}"><svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg></button>
       <div class="reel-copy"><small>${r.fabric}</small><h3>${r.title}</h3><p>${r.place}</p><div class="reel-bar"><i></i></div></div></div>`;
@@ -421,6 +448,9 @@
       el.style.zIndex = 100 - Math.round(Math.abs(off) * 10);
       el.style.visibility = Math.abs(off) > 6.5 ? 'hidden' : 'visible';
       el.classList.toggle('center', Math.abs(off) < 0.5);
+      const v = el.querySelector('video'), c = Math.abs(off) < 0.5;
+      if (v && c && v.paused) v.play().catch(() => {});
+      else if (v && !c && !v.paused) v.pause();
     },
     onChange() { reelT = 0; },
   });
@@ -454,15 +484,17 @@
   let rfRaf = 0, petalTimer = 0;
   function openReel(r) {
     const full = $('#reelFull');
-    $('#reelFullArt').innerHTML = Art.scene(540, 960, { decor: r.decor, bg: r.bg, fig: r.fig, seed: 99, figH: 900, figBottom: 1.02 });
+    const own = M(`reel-${DATA.reels.indexOf(r)}`);
+    $('#reelFullArt').innerHTML = own ? media(own, 'cover', r.title) : Art.scene(540, 960, { decor: r.decor, bg: r.bg, fig: r.fig, seed: 99, figH: 900, figBottom: 1.02 });
+    const vid = $('#reelFullArt video');
     $('#rfFabric').textContent = r.fabric; $('#rfTitle').textContent = r.title; $('#rfPlace').textContent = r.place;
     full.hidden = false; document.body.style.overflow = 'hidden';
-    setSound(true);
+    if (vid) { vid.muted = false; vid.loop = false; vid.onended = closeReel; vid.play().catch(() => {}); } else Drone.start();
     const start = performance.now();
     const step = now => {
-      const p = (now - start) / (r.dur * 1000);
+      const p = vid ? (vid.duration ? vid.currentTime / vid.duration : 0) : (now - start) / (r.dur * 1000);
       $('#rfBar').style.width = Math.min(p, 1) * 100 + '%';
-      if (p >= 1) return closeReel();
+      if (!vid && p >= 1) return closeReel();
       rfRaf = requestAnimationFrame(step);
     };
     rfRaf = requestAnimationFrame(step);
@@ -482,13 +514,14 @@
     const full = $('#reelFull');
     full.hidden = true; full.querySelectorAll('.petal').forEach(p => p.remove());
     document.body.style.overflow = '';
-    setSound(false);
+    $('#reelFullArt').innerHTML = '';
+    Drone.stop(); setSound(false);
   }
   $('#rfClose').onclick = closeReel;
 
   // ---------- bridal ----------
   const brTrack = $('#bridalTrack');
-  brTrack.innerHTML = DATA.bridal.map((b, i) => `<div class="bcard">${Art.scene(340, 470, { decor: b.decor, bg: b.bg, fig: b.fig, seed: i + 20, figH: 470, figBottom: 1.04 })}${b.off ? `<span class="off">−${b.off}%</span>` : ''}</div>`).join('');
+  brTrack.innerHTML = DATA.bridal.map((b, i) => `<div class="bcard">${pic(`bridal-${i}`, 'cover', b.name) || Art.scene(340, 470, { decor: b.decor, bg: b.bg, fig: b.fig, seed: i + 20, figH: 470, figBottom: 1.04 })}${b.off ? `<span class="off">−${b.off}%</span>` : ''}</div>`).join('');
   const priceOf = b => Math.round(b.price * (1 - b.off / 100) / 100) * 100;
   function renderBridal(i) {
     const b = DATA.bridal[i];
