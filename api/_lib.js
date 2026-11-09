@@ -2,7 +2,7 @@
 // Vercel's disk is read-only, so every change is committed straight to the GitHub repo,
 // and Vercel redeploys the site from that commit.
 // Env vars (Vercel → Project → Settings → Environment Variables):
-//   ADMIN_PASSWORD  password for /admin.html
+//   ADMIN_PASSWORD  optional password for /admin.html; leave it out and anyone can use the admin
 //   GITHUB_TOKEN    fine-grained token with "Contents: Read and write" on the repo
 //   GITHUB_REPO     owner/name, e.g. qasimehtesham30/saree-website
 //   GITHUB_BRANCH   optional, defaults to main
@@ -28,10 +28,17 @@ function send(res, code, body) {
 }
 
 function authorized(req, res) {
-  if (!REPO || !TOKEN || !PASSWORD) {
-    send(res, 500, { error: 'Admin is not set up: add ADMIN_PASSWORD, GITHUB_TOKEN and GITHUB_REPO in Vercel, then redeploy.' });
+  if (!REPO || !TOKEN) {
+    send(res, 500, { error: 'Admin is not set up: add GITHUB_TOKEN and GITHUB_REPO in Vercel, then redeploy.' });
     return false;
   }
+  // The admin page always sends this header; it forces a CORS preflight, so other websites can't drive the API.
+  if (req.headers['x-noolam-admin'] !== '1') {
+    send(res, 403, { error: 'Forbidden' });
+    return false;
+  }
+  // Without ADMIN_PASSWORD the admin is open to anyone who finds /admin.html.
+  if (!PASSWORD) return true;
   const got = Buffer.from(String(req.headers['x-admin-password'] || ''));
   const want = Buffer.from(PASSWORD);
   if (got.length !== want.length || !crypto.timingSafeEqual(got, want)) {

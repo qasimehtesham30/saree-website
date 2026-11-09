@@ -43,7 +43,7 @@ One-time setup in Vercel → your project → **Settings → Environment Variabl
 
 | Name | Value |
 | --- | --- |
-| `ADMIN_PASSWORD` | a password you choose for the admin page |
+| `ADMIN_PASSWORD` | optional, a password for the admin page. Without it **anyone** who finds `/admin.html` can change the site's photos |
 | `GITHUB_TOKEN` | a GitHub fine-grained token with **Contents: Read and write** on this repo only |
 | `GITHUB_REPO` | `qasimehtesham30/saree-website` |
 | `GITHUB_BRANCH` | optional, defaults to `main` |
